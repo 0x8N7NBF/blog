@@ -53,7 +53,7 @@ for filename in os.listdir(src_dir):
         with open(output_html_filepath, "w", encoding="utf-8") as f:
             f.write(final_html)
 
-        print(f"{output_filename} を作成しました。")
+        print(f"{output_filename_base} を作成しました。")
 
 # index.htmlの生成
 index_html_content = """
