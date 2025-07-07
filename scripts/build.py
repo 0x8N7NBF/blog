@@ -80,5 +80,5 @@ index_page_content += """
 final_index_html = base_template.replace("{{title}}", "ホーム").replace("{{content}}", index_page_content)
 
 with open(os.path.join(output_dir, "index.html"), "w", encoding="utf-8") as f:
-    f.write(index_html_content)
+    f.write(final_index_html)
 print(f"{output_dir}/index.html を作成しました。")
