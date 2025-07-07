@@ -13,19 +13,24 @@ def load_base_template() -> str:
     with open(template_path, "r", encoding="utf-8") as f:
         return f.read()
 
-def render_template(template: str, title: str, content: str) -> str:
+def render_template(template: str, title: str, content: str, css_path: str = "../assets/css/style.css") -> str:
     """
-    テンプレートにタイトルとコンテンツを埋め込む
+    テンプレートにタイトルとコンテンツ、CSSパスを埋め込む
     
     Args:
         template: ベーステンプレート
         title: ページタイトル
         content: ページコンテンツ
-        
+        css_path: CSSファイルへのパス
     Returns:
         str: レンダリングされたHTML
     """
-    return template.replace("{{title}}", title).replace("{{content}}", content)
+    return (
+        template
+        .replace("{{title}}", title)
+        .replace("{{content}}", content)
+        .replace("{{css_path}}", css_path)
+    )
 
 def generate_article_page_content(article_data: Dict[str, Any]) -> str:
     """
@@ -43,16 +48,24 @@ def generate_article_page_content(article_data: Dict[str, Any]) -> str:
     image = article_data["image"]
     html_content = article_data["html_content"]
     
-    # タグの表示部分
-    tags_html = f"<p>タグ: {', '.join(tags)}</p>" if tags else ""
+    # メタ情報の表示部分
+    meta_html = f"""
+    <div class="article-meta">
+        <p class="article-date">{date}</p>
+        {f'<div class="article-tags">{" ".join([f"<span class=\"badge bg-secondary\">{tag}</span>" for tag in tags])}</div>' if tags else ""}
+    </div>
+    """
     
-    # 画像の表示部分
-    image_html = f"<img src='{image}' class='img-fluid mb-3' alt='Thumbnail'>" if image else ""
+    # サムネイル画像の表示部分
+    image_html = f"""
+    <div class="text-center mb-4">
+        <img src='{image}' class='img-fluid rounded-custom shadow-custom' alt='{title}' style='max-width: 400px;'>
+    </div>
+    """ if image else ""
     
     return f"""
     <h1>{title}</h1>
-    <p class="text-muted">{date}</p>
-    {tags_html}
+    {meta_html}
     {image_html}
     {html_content}
     """ 

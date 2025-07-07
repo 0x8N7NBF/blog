@@ -22,8 +22,8 @@ def generate_index_page(articles_data: List[Dict[str, Any]]) -> None:
     # ベーステンプレートを読み込み
     base_template = load_base_template()
     
-    # テンプレートに埋め込み
-    final_index_html = render_template(base_template, "ホーム", index_page_content_html)
+    # テンプレートに埋め込み（index.html用にCSSパスを修正）
+    final_index_html = render_template(base_template, "ホーム", index_page_content_html, css_path="assets/css/style.css")
     
     # ファイルを出力
     index_path = os.path.join(OUTPUT_DIR, "index.html")
@@ -43,35 +43,43 @@ def generate_index_content(articles_data: List[Dict[str, Any]]) -> str:
         str: インデックスページのHTMLコンテンツ
     """
     content = """
-<div class="container" my-4>
-    <h1 class="mb-4">最新記事一覧</h1>
-    <div class="row">
+<div class="container">
+    <div class="blog-content">
+        <h1 class="text-gradient mb-5">最新記事一覧</h1>
+        <div class="row g-4">
 """
     
     for article in articles_data:
         # 画像の表示部分
-        image_html = f"<img src='{article['image']}' class='card-img-top' alt='Thumbnail'>" if article['image'] else ""
+        image_html = f"<img src='{article['image']}' class='card-img-top' alt='{article['title']}'>" if article['image'] else ""
         
         # タグの表示部分
-        tags_html = "".join([f"<span class='badge bg-secondary me-1'>{tag}</span>" for tag in article['tags']]) if article['tags'] else ""
+        tags_html = "".join([f"<span class='badge bg-secondary'>{tag}</span>" for tag in article['tags']]) if article['tags'] else ""
         
         content += f"""
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            {image_html}
-            <div class="card-body">
-                <h5 class="card-title"><a href="{article['url']}" class="text-decoration-none">{article['title']}</a></h5>
-                <p class="card-text"><small class="text-muted">{article['date']}</small></p>
-                <p class="card-text">{article['description']}</p>
-            </div>
-            <div class="card-footer">
-                {tags_html}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                {image_html}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <a href="{article['url']}">{article['title']}</a>
+                    </h5>
+                    <p class="card-text text-muted mb-2">
+                        <small class="article-date">{article['date']}</small>
+                    </p>
+                    <p class="card-text flex-grow-1">{article['description']}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="article-tags">
+                        {tags_html}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    """
+        """
     
     content += """
+        </div>
     </div>
 </div>
 """
