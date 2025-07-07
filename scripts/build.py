@@ -53,7 +53,7 @@ for filename in os.listdir(src_dir):
         description = front_matter.get('description', '')
 
         # MarkdownをHTMLに変換
-        html_content_body = markdown.markdown(content_without_title)
+        html_content_body = markdown.markdown(content_body)
 
         # 出力ファイル名とパスを指定
         # 例：my-first-post.md -> public/posts/my-first-post.html
