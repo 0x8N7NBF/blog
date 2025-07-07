@@ -56,7 +56,7 @@ for filename in os.listdir(src_dir):
         print(f"{output_filename_base} を作成しました。")
 
 # index.htmlの生成
-index_html_content = """
+index_page_content = """
 <div class="container" my-4>
     <h1>ブログ記事一覧</h1>
     <ul class="list-group">
