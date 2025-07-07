@@ -3,6 +3,7 @@ import markdown
 import yaml
 import re
 from typing import Dict, Tuple, Any
+from image_utils import process_markdown_images, validate_image_paths
 
 def parse_front_matter(filepath: str, content: str) -> Tuple[Dict[str, Any], str]:
     """
@@ -78,8 +79,14 @@ def process_markdown_file(filepath: str) -> Dict[str, Any]:
     # Front Matterと本文を分離
     front_matter, content_body = parse_front_matter(filepath, md_content)
     
+    # 記事ファイル名を取得（画像パス処理用）
+    article_filename = os.path.basename(filepath)
+    
+    # 画像パスを処理
+    processed_content = process_markdown_images(content_body, article_filename)
+    
     # タイトル取得
-    title = extract_title(filepath, front_matter, content_body)
+    title = extract_title(filepath, front_matter, processed_content)
     
     # その他のメタ情報
     date = front_matter.get('date', 'Unknown Date')
@@ -87,8 +94,14 @@ def process_markdown_file(filepath: str) -> Dict[str, Any]:
     image = front_matter.get('image', None)
     description = front_matter.get('description', '')
     
+    # 画像パスの有効性を検証
+    image_validation = validate_image_paths(processed_content, article_filename)
+    invalid_images = [path for path, valid in image_validation.items() if not valid]
+    if invalid_images:
+        print(f"Warning: Invalid image paths in {filepath}: {invalid_images}")
+    
     # MarkdownをHTMLに変換
-    html_content_body = markdown.markdown(content_body)
+    html_content_body = markdown.markdown(processed_content)
     
     return {
         "title": title,
@@ -97,4 +110,5 @@ def process_markdown_file(filepath: str) -> Dict[str, Any]:
         "image": f"{image}" if image else None,
         "description": description,
         "html_content": html_content_body,
+        "image_validation": image_validation
     } 

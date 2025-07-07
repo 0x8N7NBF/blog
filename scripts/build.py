@@ -10,10 +10,9 @@
 - index_generator: インデックスページ生成
 """
 
-from config import ensure_directories
+from config import ensure_directories, copy_assets
 from article_generator import generate_article_pages
 from index_generator import generate_index_page
-from asset_copier import copy_assets
 
 def main():
     """メイン実行関数"""
@@ -22,6 +21,10 @@ def main():
     # 必要なディレクトリを作成
     ensure_directories()
     
+    # アセットファイルをコピー
+    print("アセットファイルをコピー中...")
+    copy_assets()
+    
     # 記事ページを生成
     print("記事ページを生成中...")
     articles_data = generate_article_pages()
@@ -29,11 +32,7 @@ def main():
     # インデックスページを生成
     print("インデックスページを生成中...")
     generate_index_page(articles_data)
-
-    # アセット(画像, CSS)などをコピー
-    print("アセットをコピー中...")
-    copy_assets()
-
+    
     print(f"ビルド完了！ {len(articles_data)}個の記事を処理しました。")
 
 if __name__ == "__main__":
