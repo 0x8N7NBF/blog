@@ -1,6 +1,6 @@
 import os
 import shutil
-from build import OUTPUT_DIR
+from config import OUTPUT_DIR
 
 def copy_assets():
 
