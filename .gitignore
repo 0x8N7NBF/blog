@@ -1,2 +1,7 @@
 venv/
 public/
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+
