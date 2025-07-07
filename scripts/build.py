@@ -16,6 +16,8 @@ if not os.path.exists(os.path.join(output_dir, "posts")):
 with open(os.path.join(template_dir, "base.html"), "r", encoding="utf-8") as f:
     base_template = f.read()
 
+articles_data = [] # 記事のメタデータを格納するリスト
+
 # Markdown記事の処理
 for filename in os.listdir(src_dir):
     if filename.endswith(".md"):
@@ -23,9 +25,11 @@ for filename in os.listdir(src_dir):
         with open(filepath, "r", encoding="utf-8") as f:
             md_content = f.read()
         
-        # タイトルとコンテンツを分離
+        # ここでタイトルとコンテンツを分離するロジックをより堅牢にする
+        # 例えば、Markdownファイルの先頭にFront Matter (YAML形式のメタデータ)を追加する
+        # 現状は簡易的にタイトルだけ取得
         lines = md_content.split("\n", 1)
-        title = lines[0].lstrip('# ').strip() if lines[0].startswith('# ') else "No Title"
+        title = lines[0].lstrip('# ').strip() if lines[0].startswith('#') else os.path.splitext(filename)[0]
         content_without_title = lines[1] if len(lines) > 1 else ""
 
         # MarkdownをHTMLに変換
@@ -36,37 +40,45 @@ for filename in os.listdir(src_dir):
 
         # 出力ファイル名とパスを指定
         # 例：my-first-post.md -> public/posts/my-first-post.html
-        output_filename = os.path.splitext(filename)[0] + ".html"
-        output_filepath = os.path.join(output_dir, "posts", output_filename)
+        output_filename_base = os.path.splitext(filename)[0]
+        output_html_filepath = os.path.join(output_dir, "posts", f"{output_filename_base}.html")
+
+        # 記事のメタデータをリストに追加
+        articles_data.append({
+            "title": title,
+            "url": f"posts/{output_filename_base}.html", # トップページからの相対パス
+        })
 
         # ファイルを出力
-        with open(output_filepath, "w", encoding="utf-8") as f:
+        with open(output_html_filepath, "w", encoding="utf-8") as f:
             f.write(final_html)
 
         print(f"{output_filename} を作成しました。")
 
-# ホームページ（index.html）の簡易生成
-# これは主導でリンクを埋め込むことでルーティングを把握するステップです
-# 後で自動化します
+# index.htmlの生成
 index_html_content = """
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body>
-    <h1>ようこそ！</h1>
-    <p>私の自作ブログへようこそ！</p>
-    <h2>最新の記事</h2>
-    <ul>
-        <li><a href="posts/my-first-post.html">最初の記事</a></li>
-    </ul>
-</body>
-</html>
+<div class="container" my-4>
+    <h1>ブログ記事一覧</h1>
+    <ul class="list-group">
 """
+# 日付降順などでソートする場合は、ここでarticles_dataをソートする
+# articles_data.sort(key=lambda x: x["date"], reverse=True) # メタ情報導入後に実装可能
+
+for article in articles_data:
+    index_page_content += f"""
+    <li class="list-group-item">
+        <a href="{article["url"]}" class="text-decoration-none">{article["title"]}</a>
+    </li>
+    """
+index_page_content += """
+    </ul>
+</div>
+"""
+
+# ベーステンプレートにindex_page_contentを埋め込んでindex.htmlを生成
+# 今回は簡易的にbodyタグの中身だけを生成と仮定
+final_index_html = base_template.replace("{{title}}", "ホーム").replace("{{content}}", index_page_content)
+
 with open(os.path.join(output_dir, "index.html"), "w", encoding="utf-8") as f:
     f.write(index_html_content)
 print(f"{output_dir}/index.html を作成しました。")
