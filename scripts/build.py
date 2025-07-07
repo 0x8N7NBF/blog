@@ -13,6 +13,7 @@
 from config import ensure_directories
 from article_generator import generate_article_pages
 from index_generator import generate_index_page
+from asset_copier import copy_assets
 
 def main():
     """メイン実行関数"""
@@ -28,7 +29,11 @@ def main():
     # インデックスページを生成
     print("インデックスページを生成中...")
     generate_index_page(articles_data)
-    
+
+    # アセット(画像, CSS)などをコピー
+    print("アセットをコピー中...")
+    copy_assets()
+
     print(f"ビルド完了！ {len(articles_data)}個の記事を処理しました。")
 
 if __name__ == "__main__":

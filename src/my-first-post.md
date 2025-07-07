@@ -2,7 +2,7 @@
 title: テスト1
 date: 2025-07-07
 tags: [テスト, 日常]
-image: /assets/images/first_post_thumbnail.jpg
+image: /assets/images/thumbnails/my-first-post-thumbnail.jpg
 description: テスト用の記事です。
 ---
 
