@@ -7,6 +7,11 @@ on:
       - main # mainブランチにpushされたら実行
   workflow_dispatch: # 手動での実行も可能にする
 
+permissions:
+  contents: read # リポジトリの内容を読み取る権限
+  pages: write # GitHub Pagesへの書き込み権限
+  id-token: write # 認証トークンを生成する権限
+
 # このワークフローで何をするか
 jobs:
   build_and_deploy:
@@ -46,4 +51,3 @@ jobs:
         uses: actions/deploy-pages@v4 # デプロイアクション
         with:
           token: ${{ secrets.GITHUB_TOKEN }} # GitHubが自動で提供するトークン
-          
