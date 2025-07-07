@@ -94,8 +94,7 @@ def process_markdown_file(filepath: str) -> Dict[str, Any]:
         "title": title,
         "date": date,
         "tags": tags,
-        "image": image,
+        "image": f"{image}" if image else None,
         "description": description,
         "html_content": html_content_body,
-        "content_body": content_body
     } 
