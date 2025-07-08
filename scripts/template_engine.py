@@ -1,6 +1,6 @@
 import os
 from typing import Dict, Any
-from config import TEMPLATE_DIR
+from config import TEMPLATE_DIR, GITHUB_PAGES_BASE_URL
 
 def load_base_template() -> str:
     """
@@ -13,7 +13,7 @@ def load_base_template() -> str:
     with open(template_path, "r", encoding="utf-8") as f:
         return f.read()
 
-def render_template(template: str, title: str, content: str, css_path: str = "../assets/css/style.css") -> str:
+def render_template(template: str, title: str, content: str, css_path: str = "../assets/css/style.css", base_url: str = GITHUB_PAGES_BASE_URL) -> str:
     """
     テンプレートにタイトルとコンテンツ、CSSパスを埋め込む
     
@@ -22,6 +22,7 @@ def render_template(template: str, title: str, content: str, css_path: str = "..
         title: ページタイトル
         content: ページコンテンツ
         css_path: CSSファイルへのパス
+        base_url: ベースURL
     Returns:
         str: レンダリングされたHTML
     """
@@ -30,6 +31,7 @@ def render_template(template: str, title: str, content: str, css_path: str = "..
         .replace("{{title}}", title)
         .replace("{{content}}", content)
         .replace("{{css_path}}", css_path)
+        .replace("{{base_url}}", base_url)
     )
 
 def generate_article_page_content(article_data: Dict[str, Any]) -> str:

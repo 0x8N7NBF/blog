@@ -1,19 +1,20 @@
 import os
 import re
 from typing import Dict, Optional
-from config import SRC_DIR
+from config import SRC_DIR, GITHUB_PAGES_BASE_URL
 
 class ImagePathManager:
     """
     画像パスの短縮化と管理を行うクラス
+    GitHub PagesのベースURLを前提とした最適化
     """
     
-    # パスエイリアスの定義
+    # パスエイリアスの定義（GitHub PagesのURL構造に合わせて調整）
     PATH_ALIASES = {
-        "@thumbnails": "/blog/assets/images/thumbnails",
-        "@post-images": "/blog/assets/images/post-images",
-        "@assets": "/blog/assets/images",
-        "@": "/blog/assets/images"  # デフォルトエイリアス
+        "@thumbnails": f"{GITHUB_PAGES_BASE_URL}/assets/images/thumbnails",
+        "@post-images": f"{GITHUB_PAGES_BASE_URL}/assets/images/post-images",
+        "@assets": f"{GITHUB_PAGES_BASE_URL}/assets/images",
+        "@": f"{GITHUB_PAGES_BASE_URL}/assets/images"  # デフォルトエイリアス
     }
     
     @classmethod
@@ -31,8 +32,8 @@ class ImagePathManager:
         if not image_path:
             return ""
         
-        # 既に完全パスの場合はそのまま返す
-        if image_path.startswith(("http://", "https://", "/")):
+        # 既に完全URLの場合はそのまま返す
+        if image_path.startswith(("http://", "https://")):
             return image_path
         
         # エイリアスを展開
@@ -40,12 +41,16 @@ class ImagePathManager:
             if image_path.startswith(alias):
                 return image_path.replace(alias, full_path, 1)
         
-        # 記事固有の画像ディレクトリの場合
+        # 記事固有の画像ディレクトリの場合（./で始まる相対パス）
         if article_filename and image_path.startswith("./"):
-            article_name = os.path.splitext(article_filename)[0]
-            return f"/blog/assets/images/post-images/{article_name}/{image_path[2:]}"
+            article_name = os.path.splitext(os.path.basename(article_filename))[0]
+            return f"{GITHUB_PAGES_BASE_URL}/assets/images/post-images/{article_name}/{image_path[2:]}"
         
-        # デフォルトエイリアスを適用
+        # 絶対パス（/で始まる）の場合はGitHub PagesのベースURLを付与
+        if image_path.startswith("/"):
+            return f"{GITHUB_PAGES_BASE_URL}{image_path}"
+        
+        # デフォルトエイリアスを適用（相対パス）
         if not image_path.startswith(("/", "http")):
             return f"{cls.PATH_ALIASES['@']}/{image_path}"
         
@@ -65,6 +70,10 @@ class ImagePathManager:
         for alias, full_alias_path in cls.PATH_ALIASES.items():
             if full_path.startswith(full_alias_path):
                 return full_path.replace(full_alias_path, alias, 1)
+        
+        # GitHub PagesのベースURLを除去して相対パスに変換
+        if full_path.startswith(GITHUB_PAGES_BASE_URL):
+            return full_path.replace(GITHUB_PAGES_BASE_URL, "", 1)
         
         return full_path
 
@@ -111,14 +120,22 @@ def validate_image_paths(content: str, article_filename: str = None) -> Dict[str
     for alt_text, image_path in matches:
         expanded_path = ImagePathManager.expand_image_path(image_path, article_filename)
         
+        # GitHub PagesのURLの場合は有効とみなす
+        if expanded_path.startswith(GITHUB_PAGES_BASE_URL):
+            results[image_path] = True
+        # 外部URLの場合は有効とみなす
+        elif expanded_path.startswith(("http://", "https://")):
+            results[image_path] = True
         # ローカルファイルの場合は存在確認
-        if expanded_path.startswith("/") and not expanded_path.startswith(("http://", "https://")):
+        elif expanded_path.startswith("/"):
             # パブリックディレクトリからの相対パスに変換
-            relative_path = expanded_path.replace("/blog/assets", "assets")
+            relative_path = expanded_path.replace(GITHUB_PAGES_BASE_URL, "")
+            if relative_path.startswith("/"):
+                relative_path = relative_path[1:]  # 先頭の/を除去
             file_exists = os.path.exists(relative_path)
             results[image_path] = file_exists
         else:
-            # 外部URLの場合は有効とみなす
+            # その他の場合は有効とみなす
             results[image_path] = True
     
     return results 

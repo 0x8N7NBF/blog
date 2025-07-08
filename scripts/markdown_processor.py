@@ -3,7 +3,7 @@ import markdown
 import yaml
 import re
 from typing import Dict, Tuple, Any
-from image_utils import process_markdown_images, validate_image_paths
+from image_utils import ImagePathManager, process_markdown_images, validate_image_paths
 
 def parse_front_matter(filepath: str, content: str) -> Tuple[Dict[str, Any], str]:
     """
@@ -91,7 +91,7 @@ def process_markdown_file(filepath: str) -> Dict[str, Any]:
     # その他のメタ情報
     date = front_matter.get('date', 'Unknown Date')
     tags = front_matter.get('tags', [])
-    image = front_matter.get('image', None)
+    image = ImagePathManager.expand_image_path(front_matter.get('image', None), article_filename)
     description = front_matter.get('description', '')
     
     # 画像パスの有効性を検証

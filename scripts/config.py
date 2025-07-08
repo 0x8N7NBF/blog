@@ -8,6 +8,7 @@ OUTPUT_DIR = "public"
 POSTS_DIR = os.path.join(OUTPUT_DIR, "posts")
 ASSETS_SRC_DIR = "assets_src"
 ASSETS_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "assets")
+GITHUB_PAGES_BASE_URL = "https://0x8n7nbf.github.io/blog"
 
 def ensure_directories():
     """必要なディレクトリが存在しない場合は作成する"""
