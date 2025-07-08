@@ -2,7 +2,7 @@
 title: スクリプトテスト用記事 - 全機能テスト
 date: 2025-01-15
 tags: [テスト, 技術, Python, Markdown, ブログ]
-image: @thumbnails/test_article_thumbnail.jpg
+image: "@thumbnails/test_article_thumbnail.jpg"
 description: この記事はブログ生成スクリプトの全機能をテストするために作成されました。Front Matter、Markdown記法、画像、タグ、説明文など全ての機能が含まれています。
 ---
 

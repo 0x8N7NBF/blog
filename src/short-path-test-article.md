@@ -2,7 +2,7 @@
 title: 短縮パステスト記事
 date: 2025-01-18
 tags: [テスト, 短縮パス, 画像]
-image: @thumbnails/short_path_test.jpg
+image: "@thumbnails/short_path_test.jpg"
 description: 短縮パス機能をテストする記事です。様々な短縮パス形式を使用して画像を表示します。
 ---
 
